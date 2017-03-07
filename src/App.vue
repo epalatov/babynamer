@@ -24,7 +24,7 @@
      <div class="error" v-show="errors[0].status">{{ errors[0].emptyName }}</div>
      <div class="error" v-show="errors[1].status">{{ errors[1].repeatInList }}</div>
      <div class="error" v-show="errors[2].status">{{ errors[2].repeatInFavorite }}</div>
-     <app-footer></app-footer>
+     <app-footer :chnames="chnames"></app-footer>
      {{ selectedNames }}
   </div>
 </template>
@@ -35,6 +35,19 @@ import NewName from './components/NewName.vue';
 import MainList from './components/MainList.vue';
 import Favorites from './components/Favorites.vue';
 import Footer from './components/Footer.vue';
+import Firebase from 'firebase';
+
+let config = {
+   apiKey: "AIzaSyA-1SfsVk8zHQSiB9n6llK8jdiOCd1hfAs",
+   authDomain: "babyname-ee096.firebaseapp.com",
+   databaseURL: "https://babyname-ee096.firebaseio.com",
+   storageBucket: "babyname-ee096.appspot.com",
+   messagingSenderId: "272322713073"
+}
+
+let app = Firebase.initializeApp(config);
+let db = app.database();
+let chNames = db.ref('chnames');
 
 export default {
    created() {
@@ -46,6 +59,9 @@ export default {
          }
          this.keys = haveKeys;
       }
+   },
+   firebase: {
+      chnames: chNames
    },
    data() {
       return {
