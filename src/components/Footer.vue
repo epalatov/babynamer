@@ -1,10 +1,10 @@
 <template lang="html">
-   <p>footer here</p>
 </template>
 
 <script>
-export default {
-}
+// export default {
+//    props: ['chnames']
+// }
 </script>
 
 <style lang="css">

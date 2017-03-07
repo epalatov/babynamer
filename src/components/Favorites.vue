@@ -5,7 +5,11 @@
       <button type="button" name="removeFavorite" @click="removeFavorite(selectedNames)">Remove</button>
       <hr>
       <ul>
-         <li class="list__item" v-for="(name, index) in names" v-if="name.favorite === true" :key="name" @click="select(name.firstname)">{{ name.lastname }} {{ name.firstname }} {{ name.patronym }}</li>
+         <li class="list__item" v-for="(name, index) in names"
+                        v-if="name.favorite === true"
+                        :key="name" @click="select(name.firstname)">
+                        {{ name.curMode }}
+         </li>
       </ul>
    </div>
 </template>
