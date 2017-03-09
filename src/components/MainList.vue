@@ -6,6 +6,7 @@
       <button type="button" name="removeName" @click="takeAction(selectedNames, 'removeName')">Remove</button>
       <button type="button" name="changeMode" @click="modeList()">List Mode</button>
       <hr>
+      <div v-show="mainList">Список пуст</div>
       <ul>
          <li class="list__item" v-for="(name, index) in names"
                                  v-if="name.favorite === false"
@@ -28,7 +29,8 @@ export default {
       names: Array,
       selectedNames: Array,
       takeAction: Function,
-      modeList: Function
+      modeList: Function,
+      mainList: Boolean
 
    },
    methods: {

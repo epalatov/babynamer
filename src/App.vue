@@ -4,14 +4,17 @@
         <img src="" alt="Babynamer">
         <nav class="main-nav" slot="main-nav">
            <ul class="main-nav__list">
+              <li class="main-nav__item"><button type="button" @click="">Church names</button></li>
               <li class="main-nav__item"><button type="button" @click="currentView = 'appMainNames'">My List</button></li>
               <li class="main-nav__item"><button type="button" @click="currentView = 'appFavorites'">My Favorite</button><span>{{ favoriteCounter }}</span></li>
            </ul>
         </nav>
      </app-header>
+     <app-options class="options"></app-options>
      <app-new-name @addEvent="addName" :userData="userData"></app-new-name>
      <component class="result-box":is="currentView"
                :names="names"
+               :mainList="mainList"
                :clearFavorite="clearFavorite"
                :removeFavorite="removeFavorite"
                :takeAction="takeAction"
@@ -31,6 +34,7 @@
 
 <script>
 import Header from './components/Header.vue';
+import Options from './components/Options.vue';
 import NewName from './components/NewName.vue';
 import MainList from './components/MainList.vue';
 import Favorites from './components/Favorites.vue';
@@ -58,6 +62,7 @@ export default {
             this.favoriteCounter++
          }
          this.keys = haveKeys;
+         this.mainList = false;
       }
    },
    firebase: {
@@ -72,6 +77,7 @@ export default {
          },
          names: [],
          keys: [],
+         mainList: true,
          selectedNames: [],
          currentView: 'appMainNames',
          listMode: 0,
@@ -125,6 +131,7 @@ export default {
          }
          this.names.push(newName);
          console.log(this.names);
+         this.mainList = false;
          this.userData.firstname = '';
          this.errors[0].status = false;
          this.errors[1].status = false;
@@ -141,6 +148,7 @@ export default {
             });
             this.names = filterArr;
             this.selectedNames = [];
+            this.mainList = true;
          } else if (action === 'removeName') {
             for (var i = 0; i < selectedNames.length; i++) {
                this.names.forEach(function(item, index, arr){
@@ -148,6 +156,14 @@ export default {
                      arr.splice(index, 1)
                   }
                });
+               var notEmpty = this.names.some(function(item, index, arr){
+                  return item.favorite === false
+               })
+               if(notEmpty){
+                  this.mainList = false;
+               }else {
+                  this.mainList = true;
+               }
                this.selectedNames = [];
             }
          } else if (action === 'toFavorite') {
@@ -257,7 +273,8 @@ export default {
       appNewName: NewName,
       appMainNames: MainList,
       appFavorites: Favorites,
-      appFooter: Footer
+      appFooter: Footer,
+      appOptions: Options
    },
    computed: {
 
@@ -289,12 +306,13 @@ export default {
          cursor: pointer;
       }
    }
-   // .list__item {
-   //    cursor: pointer;
-   // }
    .error {
       text-align: center;
       padding: 10px;
       background-color: #fcbfbf;
+   }
+   .options {
+      text-align: center;
+      margin-bottom: 30px;
    }
 </style>

@@ -1,6 +1,7 @@
 <template lang="html">
    <div class="">
       <slot name="main-nav"></slot>
+      <slot name="options"></slot>
       <slot></slot>
    </div>
 </template>
