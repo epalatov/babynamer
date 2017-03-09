@@ -31,7 +31,6 @@ export default {
       takeAction: Function,
       modeList: Function,
       mainListEmpty: Boolean
-
    },
    methods: {
       select(name) {

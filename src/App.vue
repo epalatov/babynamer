@@ -29,8 +29,9 @@
      <div class="error" v-show="errors[0].status">{{ errors[0].emptyName }}</div>
      <div class="error" v-show="errors[1].status">{{ errors[1].repeatInList }}</div>
      <div class="error" v-show="errors[2].status">{{ errors[2].repeatInFavorite }}</div>
-     <app-footer :chnames="chnames"></app-footer>
-     {{ selectedNames }}
+     <app-donate v-show="donateShow" class="donate"></app-donate>
+     <app-footer :changeDonateShow="changeDonateShow"
+               :changeCurrentView="changeCurrentView"></app-footer>
   </div>
 </template>
 
@@ -40,7 +41,9 @@ import Options from './components/Options.vue';
 import NewName from './components/NewName.vue';
 import mainList from './components/MainList.vue';
 import Favorites from './components/Favorites.vue';
+import Donate from './components/Donate.vue';
 import Footer from './components/Footer.vue';
+import About from './components/About.vue';
 import Firebase from 'firebase';
 
 let config = {
@@ -89,6 +92,7 @@ export default {
          },
          names: [],
          keys: [],
+         donateShow: false,
          mainListEmpty: true,
          favoriteListEmpty: true,
          selectedNames: [],
@@ -104,10 +108,13 @@ export default {
          ]
       }
    },
-   watch: {
-
-   },
    methods: {
+      changeCurrentView() {
+         this.currentView = 'appAbout';
+      },
+      changeDonateShow() {
+         this.donateShow = !this.donateShow
+      },
       showChurchNames() {
          this.currentView = 'appMainNames';
       },
@@ -160,6 +167,7 @@ export default {
          this.names.push(newName);
          console.log(this.names);
          this.mainListEmpty = false;
+         this.currentView = 'appMainNames';
          this.userData.firstname = '';
          this.errors[0].status = false;
          this.errors[1].status = false;
@@ -312,7 +320,9 @@ export default {
       appMainNames: mainList,
       appFavorites: Favorites,
       appFooter: Footer,
-      appOptions: Options
+      appOptions: Options,
+      appDonate: Donate,
+      appAbout: About
    },
    computed: {
 
