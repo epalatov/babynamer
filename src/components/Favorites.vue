@@ -4,6 +4,7 @@
       <button type="button" name="clearList" @click="clearFavorite()">Clear Favorite</button>
       <button type="button" name="removeFavorite" @click="removeFavorite(selectedNames)">Remove</button>
       <hr>
+      <div class="empty-list" v-show="favoriteListEmpty">Ваш список избранного пуст</div>
       <ul>
          <li class="list__item" v-for="(name, index) in names"
                         v-if="name.favorite === true"
@@ -21,7 +22,8 @@ export default {
       selectedNames: Array,
       clearFavorite: Function,
       removeFavorite: Function,
-      takeAction: Function
+      takeAction: Function,
+      favoriteListEmpty: Boolean
    },
    methods: {
       select(name) {

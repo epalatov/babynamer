@@ -4,18 +4,20 @@
         <img src="" alt="Babynamer">
         <nav class="main-nav" slot="main-nav">
            <ul class="main-nav__list">
-              <li class="main-nav__item"><button type="button" @click="">Church names</button></li>
+              <li class="main-nav__item"><button type="button" @click="currentView = 'appMainNames'; churchNamesOptions = !churchNamesOptions">Church names</button></li>
               <li class="main-nav__item"><button type="button" @click="currentView = 'appMainNames'">My List</button></li>
-              <li class="main-nav__item"><button type="button" @click="currentView = 'appFavorites'">My Favorite</button><span>{{ favoriteCounter }}</span></li>
+              <li class="main-nav__item"><button type="button" @click="currentView = 'appFavorites'; churchNamesOptions = false">My Favorite</button><span>{{ favoriteCounter }}</span></li>
            </ul>
         </nav>
      </app-header>
-     <app-options class="options"></app-options>
-     <app-new-name @addEvent="addName" :userData="userData"></app-new-name>
+     <app-options class="options-panel" v-show="churchNamesOptions && currentView === 'appMainNames'" :getChurchNames="getChurchNames"></app-options>
+     <app-new-name @addEvent="addName" :userData="userData"  v-show="currentView !== 'appFavorites'"></app-new-name>
      <component class="result-box":is="currentView"
                :names="names"
-               :mainList="mainList"
+               :favoriteListEmpty="favoriteListEmpty"
+               :mainListEmpty="mainListEmpty"
                :clearFavorite="clearFavorite"
+               :currentView="currentView"
                :removeFavorite="removeFavorite"
                :takeAction="takeAction"
                :selectedNames="selectedNames"
@@ -36,7 +38,7 @@
 import Header from './components/Header.vue';
 import Options from './components/Options.vue';
 import NewName from './components/NewName.vue';
-import MainList from './components/MainList.vue';
+import mainList from './components/MainList.vue';
 import Favorites from './components/Favorites.vue';
 import Footer from './components/Footer.vue';
 import Firebase from 'firebase';
@@ -55,6 +57,7 @@ let chNames = db.ref('chnames');
 
 export default {
    created() {
+      var vm = this;
       var haveKeys = JSON.parse(localStorage.getItem('keys'));
       if(haveKeys) {
          for(var i = 0; i <= haveKeys.length-1; i++){
@@ -62,7 +65,16 @@ export default {
             this.favoriteCounter++
          }
          this.keys = haveKeys;
-         this.mainList = false;
+      this.names.forEach(function(item, index){
+         if(item.favorite === false){
+            vm.mainListEmpty = false;
+         } else if(item.favorite === true){
+            vm.favoriteListEmpty = false;
+         } else {
+            vm.favoriteListEmpty = true;
+            vm.mainListEmpty = true;
+         }
+      })
       }
    },
    firebase: {
@@ -77,8 +89,10 @@ export default {
          },
          names: [],
          keys: [],
-         mainList: true,
+         mainListEmpty: true,
+         favoriteListEmpty: true,
          selectedNames: [],
+         churchNamesOptions: false,
          currentView: 'appMainNames',
          listMode: 0,
          favoriteCounter: 0,
@@ -94,6 +108,20 @@ export default {
 
    },
    methods: {
+      showChurchNames() {
+         this.currentView = 'appMainNames';
+      },
+      getChurchNames(gender, date){
+         var resultQuery = this.chnames.filter(function(obj, index, arr){
+            return obj.gender === gender && obj.date === date;
+         })
+         for (var i = 0; i < resultQuery.length; i++) {
+            this.userData.lastname = this.userData.lastname;
+            this.userData.patronym = this.userData.patronym;
+            this.userData.firstname = resultQuery[i].name;
+            this.addName(this.userData);
+         }
+      },
       addName(fullname) {
          var vm = this;
          var repeatInFavorite = this.names.some(function(item, index, arr) {
@@ -131,7 +159,7 @@ export default {
          }
          this.names.push(newName);
          console.log(this.names);
-         this.mainList = false;
+         this.mainListEmpty = false;
          this.userData.firstname = '';
          this.errors[0].status = false;
          this.errors[1].status = false;
@@ -148,7 +176,7 @@ export default {
             });
             this.names = filterArr;
             this.selectedNames = [];
-            this.mainList = true;
+            this.mainListEmpty = true;
          } else if (action === 'removeName') {
             for (var i = 0; i < selectedNames.length; i++) {
                this.names.forEach(function(item, index, arr){
@@ -160,9 +188,9 @@ export default {
                   return item.favorite === false
                })
                if(notEmpty){
-                  this.mainList = false;
+                  this.mainListEmpty = false;
                }else {
-                  this.mainList = true;
+                  this.mainListEmpty = true;
                }
                this.selectedNames = [];
             }
@@ -178,6 +206,14 @@ export default {
                      localStorage.setItem('keys', JSON.stringify(vm.keys));
                   }
                });
+               this.favoriteListEmpty = false;
+               this.names.forEach(function(item, index, arr){
+                  if(item.favorite === false){
+                     vm.mainListEmpty = false;
+                  } else {
+                     vm.mainListEmpty = true;
+                  }
+               })
                this.selectedNames = [];
             }
          }
@@ -189,6 +225,7 @@ export default {
          });
          this.favoriteCounter = 0;
          localStorage.clear()
+         this.favoriteListEmpty = true;
          this.names = filterArr;
       },
       removeFavorite(selectedNames) {
@@ -210,6 +247,7 @@ export default {
                   if(vm.favoriteCounter === 0){
                      localStorage.clear()
                      vm.keys = [];
+                     vm.favoriteListEmpty = true;
                   }
                }
             });
@@ -271,7 +309,7 @@ export default {
    components: {
       appHeader: Header,
       appNewName: NewName,
-      appMainNames: MainList,
+      appMainNames: mainList,
       appFavorites: Favorites,
       appFooter: Footer,
       appOptions: Options
@@ -295,7 +333,7 @@ export default {
    }
    .result-box {
       padding: 10px;
-      background-color: #E6E6FA;
+      background-color: #c1c1c3;
    }
    .main-nav__list {
       padding: 0;
@@ -311,8 +349,14 @@ export default {
       padding: 10px;
       background-color: #fcbfbf;
    }
-   .options {
+   .options-panel {
+      padding: 15px 0;
+      background-color: #a5dcde;
       text-align: center;
       margin-bottom: 30px;
+   }
+   .empty-list {
+      text-align: center;
+      padding: 20px 0;
    }
 </style>
