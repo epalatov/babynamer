@@ -288,6 +288,13 @@ export default {
                      localStorage.clear()
                      vm.keys = [];
                      vm.favoriteListEmpty = true;
+                  } else {
+                     vm.keys.forEach(function(item, index){
+                        if(item === selectedNames[i]) {
+                           vm.keys.splice(index, 1)
+                           localStorage.setItem('keys', JSON.stringify(vm.keys));
+                        }
+                     });
                   }
                }
             });
