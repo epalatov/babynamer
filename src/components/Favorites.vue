@@ -9,7 +9,7 @@
          <li class="list__item" v-for="(name, index) in names"
                         v-if="name.favorite === true"
                         :key="name" @click="select(name.firstname)">
-                        {{ name.curMode }}
+                        {{ customFilter(name.curMode) }}
          </li>
       </ul>
    </div>
@@ -30,6 +30,16 @@ export default {
    methods: {
       select(name) {
          this.$emit('selected', name)
+      },
+      customFilter(name) {
+         var result = []
+         var arrItems = name.split(' ')
+         for (var i = 0; i < arrItems.length; i++) {
+            var firstChar = arrItems[i].charAt(0).toUpperCase();
+            var item = arrItems[i].toLowerCase().slice(1)
+            result.push(firstChar+item)
+         }
+         return result.join(' ');
       }
    }
 }

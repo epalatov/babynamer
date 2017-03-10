@@ -27,10 +27,18 @@
                >
      </component>
      {{ selectedNames }}
-     <div class="error" v-show="errors[0].status">{{ errors[0].emptyName }}</div>
-     <div class="error" v-show="errors[1].status">{{ errors[1].repeatInList }}</div>
-     <div class="error" v-show="errors[2].status">{{ errors[2].repeatInFavorite }}</div>
-     <div class="error" v-show="errors[3].status">{{ errors[3].UnacceptableSymbols }}</div>
+     <transition name="slide">
+        <div class="error" v-show="emptyName">{{ errors[0].emptyName }}</div>
+     </transition>
+     <transition name="slide">
+        <div class="error" v-if="repeatInList">{{ errors[1].repeatInList }}</div>
+     </transition>
+     <transition name="slide">
+        <div class="error" v-if="repeatInFavorite">{{ errors[2].repeatInFavorite }}</div>
+     </transition>
+     <transition name="slide">
+        <div class="error"  v-if="unacceptableSymbols">{{ errors[3].unacceptableSymbols }}</div>
+     </transition>
      <app-donate v-show="donateShow" class="donate"></app-donate>
      <app-footer :changeDonateShow="changeDonateShow"
                :changeCurrentView="changeCurrentView"></app-footer>
@@ -86,6 +94,9 @@ export default {
    firebase: {
       chnames: chNames
    },
+   watch: {
+
+   },
    data() {
       return {
          userData: {
@@ -93,6 +104,7 @@ export default {
             firstname: '',
             patronym: ''
          },
+         displayBlock: '',
          names: [],
          keys: [],
          donateShow: false,
@@ -103,16 +115,36 @@ export default {
          currentView: 'appMainNames',
          listMode: 0,
          favoriteCounter: 0,
-         errorStatus: false,
+         emptyName: false,
+         repeatInList: false,
+         repeatInFavorite: false,
+         unacceptableSymbols: false,
          errors: [
-            {emptyName: 'Поле "Имя" не может быть пустым!', status: false},
-            {repeatInList: 'Такое имя уже есть в списке!', status: false},
-            {repeatInFavorite: 'Такое имя уже есть в избранном!', status: false},
-            {UnacceptableSymbols: 'Ошибка! Недопустимые символы', status: false}
+            {emptyName: 'Поле "Имя" не может быть пустым!'},
+            {repeatInList: 'Такое имя уже есть в списке!'},
+            {repeatInFavorite: 'Такое имя уже есть в избранном!'},
+            {unacceptableSymbols: 'Ошибка! Недопустимые символы'}
          ]
       }
    },
    methods: {
+      showError(error) {
+         var vm = this;
+         switch (error) {
+            case 'emptyName': this.emptyName = true;
+            setTimeout(function(){ vm.emptyName = false; }, 5000);
+            break;
+            case 'repeatInList': this.repeatInList = true;
+            setTimeout(function(){ vm.repeatInList = false; }, 5000);
+            break;
+            case 'repeatInFavorite': this.repeatInFavorite = true;
+            setTimeout(function(){ vm.repeatInFavorite = false; }, 5000);
+            break;
+            case 'unacceptableSymbols': this.unacceptableSymbols = true;
+            setTimeout(function(){ vm.unacceptableSymbols = false; }, 5000);
+            break;
+         }
+      },
       pushSelectedNames(name) {
          var selected = this.selectedNames.some(function(item, index){
             return item === name;
@@ -154,11 +186,11 @@ export default {
          var item2 = fullname.lastname.match(reg)
          var item3 = fullname.patronym.match(reg)
          if(item1 !== null){
-            return this.errors[3].status = true;
+            return this.showError('unacceptableSymbols');
          } else if (item2 !== null){
-            return this.errors[3].status = true;
+            return this.showError('unacceptableSymbols');
          } else if (item3 !== null) {
-            return this.errors[3].status = true;
+            return this.showError('unacceptableSymbols');
          }
          var repeatInFavorite = this.names.some(function(item, index, arr) {
             return item.firstname === fullname.firstname && item.favorite === true
@@ -167,13 +199,13 @@ export default {
             return item.firstname === fullname.firstname
          })
          if(this.userData.firstname === ''){
-            return this.errors[0].status = true;
+            return this.showError('emptyName');
          }
          if(repeatInFavorite) {
-            return this.errors[2].status = true;
+            return this.showError('repeatInFavorite');
          }
          if(repeatInList) {
-            return this.errors[1].status = true;
+            return this.showError('repeatInList');
          }
 
          var newName = {};
@@ -440,5 +472,49 @@ export default {
    .empty-list {
       text-align: center;
       padding: 20px 0;
+   }
+
+   .fade-enter {
+      opacity: 0;
+   }
+   .fade-enter-active {
+      transition: opacity .3s;
+   }
+   .fade-leave {
+   }
+   .fade-leave-active {
+      transition: opacity .3s;
+      opacity: 0;
+   }
+   .slide-enter {
+      opacity: 0;
+   }
+   .slide-enter-active {
+      transition: opacity .3s;
+      animation: slide-in .3s ease-out forwards;
+   }
+   .slide-leave {
+
+   }
+   .slide-leave-active {
+      transition: opacity .3s;
+      opacity: 0;
+      animation: slide-out .3s ease-out forwards;
+   }
+   @keyframes slide-in {
+      from {
+         transform: translateY(-10px);
+      }
+      to {
+         transform: translateY(0);
+      }
+   }
+   @keyframes slide-out {
+      from {
+         transform: translateY(0);
+      }
+      to {
+         transform: translateY(-10px);
+      }
    }
 </style>

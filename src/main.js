@@ -6,25 +6,21 @@ Vue.use(VueFire);
 Vue.filter('to-uppercase', function(value){
    return value.toUpperCase()
 });
-Vue.directive('highlight', {
+Vue.directive('hide', {
    bind(el, binding, vnode) {
       //el.style.backgroundColor = 'green';
       //el.style.backgroundColor = binding.value;
       var delay = 0;
       if(binding.modifiers['delayed']){
-         delay = 3000;
+         binding.value;
       }
       setTimeout(function(){
-         if(binding.arg == 'background'){
-            el.style.backgroundColor = binding.value;
-         } else {
-            el.style.color = binding.value;
-         }
-      }, delay)
+         el.style.display = "hidden";
+      }, binding.value)
    }
 });
 Vue.mixin({
-   
+
 });
 
 new Vue({
