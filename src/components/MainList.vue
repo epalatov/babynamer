@@ -71,6 +71,10 @@ export default {
       cursor: pointer;
    }
    .list__item {
-      padding: 5px 0;
+      padding: 5px 5px;
+      &:hover {
+         background-color: #dddbe9;
+         cursor: pointer;
+      }
    }
 </style>

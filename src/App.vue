@@ -21,11 +21,12 @@
                :removeFavorite="removeFavorite"
                :takeAction="takeAction"
                :selectedNames="selectedNames"
-               @selected="selectedNames.push($event)"
+               @selected="pushSelectedNames($event)"
                @mode="changeModeName"
                :modeList="changeModeList"
                >
-                                 </component>
+     </component>
+     {{ selectedNames }}
      <div class="error" v-show="errors[0].status">{{ errors[0].emptyName }}</div>
      <div class="error" v-show="errors[1].status">{{ errors[1].repeatInList }}</div>
      <div class="error" v-show="errors[2].status">{{ errors[2].repeatInFavorite }}</div>
@@ -112,6 +113,20 @@ export default {
       }
    },
    methods: {
+      pushSelectedNames(name) {
+         var selected = this.selectedNames.some(function(item, index){
+            return item === name;
+         });
+         if(selected === false) {
+            this.selectedNames.push(name);
+         } else {
+            this.selectedNames.forEach(function(item, index, arr) {
+               if(item === name){
+                  arr.splice(index, 1)
+               }
+            })
+         }
+      },
       changeCurrentView() {
          this.currentView = 'appAbout';
       },
@@ -251,6 +266,7 @@ export default {
          localStorage.clear()
          this.favoriteListEmpty = true;
          this.names = filterArr;
+         this.selectedNames = [];
       },
       removeFavorite(selectedNames) {
          var vm = this;

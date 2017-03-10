@@ -1,0 +1,15 @@
+{
+  "transport": "ftp",
+  "uploadOnSave": false,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "vh135388.cp.eurobyte.ru",
+  "target": "www/babynamer.ru",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "vh135388",
+  "password": "NaOW8y7F",
+  "watch": []
+}
