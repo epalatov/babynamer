@@ -29,6 +29,7 @@
      <div class="error" v-show="errors[0].status">{{ errors[0].emptyName }}</div>
      <div class="error" v-show="errors[1].status">{{ errors[1].repeatInList }}</div>
      <div class="error" v-show="errors[2].status">{{ errors[2].repeatInFavorite }}</div>
+     <div class="error" v-show="errors[3].status">{{ errors[3].UnacceptableSymbols }}</div>
      <app-donate v-show="donateShow" class="donate"></app-donate>
      <app-footer :changeDonateShow="changeDonateShow"
                :changeCurrentView="changeCurrentView"></app-footer>
@@ -36,6 +37,7 @@
 </template>
 
 <script>
+import { myMixin } from './myMixin';
 import Header from './components/Header.vue';
 import Options from './components/Options.vue';
 import NewName from './components/NewName.vue';
@@ -104,7 +106,8 @@ export default {
          errors: [
             {emptyName: 'Поле "Имя" не может быть пустым!', status: false},
             {repeatInList: 'Такое имя уже есть в списке!', status: false},
-            {repeatInFavorite: 'Такое имя уже есть в избранном!', status: false}
+            {repeatInFavorite: 'Такое имя уже есть в избранном!', status: false},
+            {UnacceptableSymbols: 'Ошибка! Недопустимые символы', status: false}
          ]
       }
    },
@@ -131,6 +134,17 @@ export default {
       },
       addName(fullname) {
          var vm = this;
+         var reg = /[#<>!№@:();"$&0-9]/g;
+         var item1 = fullname.firstname.match(reg)
+         var item2 = fullname.lastname.match(reg)
+         var item3 = fullname.patronym.match(reg)
+         if(item1 !== null){
+            return this.errors[3].status = true;
+         } else if (item2 !== null){
+            return this.errors[3].status = true;
+         } else if (item3 !== null) {
+            return this.errors[3].status = true;
+         }
          var repeatInFavorite = this.names.some(function(item, index, arr) {
             return item.firstname === fullname.firstname && item.favorite === true
          })
@@ -172,6 +186,7 @@ export default {
          this.errors[0].status = false;
          this.errors[1].status = false;
          this.errors[2].status = false;
+         this.errors[3].status = false;
       },
       takeAction(selectedNames, action) {
          var vm = this;
@@ -214,16 +229,17 @@ export default {
                      localStorage.setItem('keys', JSON.stringify(vm.keys));
                   }
                });
-               this.favoriteListEmpty = false;
-               this.names.forEach(function(item, index, arr){
-                  if(item.favorite === false){
-                     vm.mainListEmpty = false;
-                  } else {
-                     vm.mainListEmpty = true;
-                  }
-               })
-               this.selectedNames = [];
             }
+            this.favoriteListEmpty = false;
+            var mainListHaveItemthis = this.names.some(function(item, index, arr){
+               return item.favorite === false
+            })
+            if(mainListHaveItemthis){
+               this.mainListEmpty = false;
+            } else {
+               this.mainListEmpty = true;
+            }
+            this.selectedNames = [];
          }
       },
       clearFavorite() {
@@ -324,6 +340,40 @@ export default {
       appDonate: Donate,
       appAbout: About
    },
+   directives: {
+      //v-local-highlight:background.delayed.blink="{mainColor: '#B0C4DE', secondColor: '#DB7093', delay: 500}"
+      'local-highlight': {
+         bind(el, binding, vnode) {
+            var delay = 0;
+            if(binding.modifiers['delayed']){
+               delay = 3000;
+            }
+            if (binding.modifiers['blink']) {
+               let mainColor = binding.value.mainColor;
+               let secondColor = binding.value.secondColor;
+               let currentColor = mainColor;
+               setTimeout(function(){
+                  setInterval(function(){
+                     currentColor == secondColor ? currentColor = mainColor : currentColor = secondColor;
+                     if(binding.arg == 'background'){
+                        el.style.backgroundColor = currentColor;
+                     } else {
+                        el.style.color = currentColor;
+                     }
+                  }, binding.value.delay)
+               }, delay);
+            } else {
+               setTimeout(function(){
+                  if(binding.arg == 'background'){
+                     el.style.backgroundColor = binding.value.mainColor;
+                  } else {
+                     el.style.color = binding.value.mainColor;
+                  }
+               }, delay);
+            }
+         }
+      }
+   },
    computed: {
 
    }
@@ -343,7 +393,6 @@ export default {
    }
    .result-box {
       padding: 10px;
-      background-color: #c1c1c3;
    }
    .main-nav__list {
       padding: 0;

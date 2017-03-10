@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import { myMixin } from  '../myMixin';
 export default {
+   mixins:[myMixin],
    props: {
       names: Array,
       selectedNames: Array,
