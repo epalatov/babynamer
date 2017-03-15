@@ -1,0 +1,15 @@
+.list-box__item {
+   font-size: 37px;
+}
+
+
+.header-wrap,
+.option-wrap,
+.new-name-wrap,
+.footer,
+.empty-list,
+.control-btns,
+.change-mode-btn
+{
+  display: none;
+}

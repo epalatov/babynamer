@@ -1,12 +1,13 @@
 <template lang="html">
-   <div>
-      <form class="main-form">
-         <input type="text" name="lastname" v-model="userData.lastname" placeholder="Фамилия">
-         <input type="text" name="firstname" v-model="userData.firstname" placeholder="Имя">
-         <input type="text" name="patronym" v-model="userData.patronym" placeholder="Отчество">
-         <input type="submit" value="Добавить имя" @click.prevent="add()">
-      </form>
-   </div>
+   <form class="main-form">
+      <input class="main-form__item" type="text" name="lastname" v-model="userData.lastname" placeholder="Фамилия ребенка">
+      <input class="main-form__item" type="text" name="firstname" v-model="userData.firstname" placeholder="Желаемое имя">
+      <input class="main-form__item" type="text" name="patronym" v-model="userData.patronym" placeholder="Отчество ребенка">
+      <div class="main-form__submit-wrap">
+         <input class="submit-btn" type="submit" value="Добавить имя в список" @click.prevent="add()">
+         <input class="submit-btn-hide" type="submit" value="Добавить имя" @click.prevent="add()">
+      </div>
+   </form>
 </template>
 
 <script>
@@ -30,8 +31,63 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
    .main-form {
+      padding: 50px;
       margin-bottom: 10px;
+      &__item {
+         font-size: 18px;
+         color: #505050;
+         padding: 13px 22px;
+         margin: 0 5px;
+         border: none;
+         border-radius: 3px;
+         @media (max-width: 991px) {
+            display: block;
+            width: 60%;
+            margin: 0 auto 12px auto;
+         }
+         @media (max-width: 767px) {
+            width: 100%;
+            margin: 10px 0;
+         }
+      }
+      &__submit-wrap {
+         padding-top: 30px;
+      }
+      @media (max-width: 767px) {
+         padding: 13px 8px;
+      }
+   }
+   .submit-btn {
+      border: 0;
+      border-radius: 3px;
+      padding: 15px 50px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #D86979;
+      transition: all .2s;
+      outline: none;
+      &:hover {
+         background-color: darken(#D86979, 5%);
+      }
+      @media (max-width: 767px) {
+         display: none;
+      }
+   }
+   .submit-btn-hide {
+      border: 0;
+      border-radius: 3px;
+      padding: 15px 50px;
+      font-size: 22px;
+      color: #fff;
+      background-color: #D86979;
+      transition: all .2s;
+      outline: none;
+      display: none;
+      @media (max-width: 767px) {
+         display: block;
+         width: 100%;
+      }
    }
 </style>

@@ -1,32 +1,58 @@
 <template>
   <div id="app">
-     <app-header class="header">
-        <img src="" alt="Babynamer">
-        <nav class="main-nav" slot="main-nav">
-           <ul class="main-nav__list">
-              <li class="main-nav__item"><button type="button" @click="currentView = 'appMainNames'; churchNamesOptions = !churchNamesOptions">Church names</button></li>
-              <li class="main-nav__item"><button type="button" @click="currentView = 'appMainNames'">My List</button></li>
-              <li class="main-nav__item"><button type="button" @click="currentView = 'appFavorites'; churchNamesOptions = false">My Favorite</button><span>{{ favoriteCounter }}</span></li>
-           </ul>
-        </nav>
-     </app-header>
-     <app-options class="options-panel" v-show="churchNamesOptions && currentView === 'appMainNames'" :getChurchNames="getChurchNames"></app-options>
-     <app-new-name @addEvent="addName" :userData="userData"  v-show="currentView !== 'appFavorites'"></app-new-name>
-     <component class="result-box":is="currentView"
-               :names="names"
-               :favoriteListEmpty="favoriteListEmpty"
-               :mainListEmpty="mainListEmpty"
-               :clearFavorite="clearFavorite"
-               :currentView="currentView"
-               :removeFavorite="removeFavorite"
-               :takeAction="takeAction"
-               :selectedNames="selectedNames"
-               @selected="pushSelectedNames($event)"
-               @mode="changeModeName"
-               :modeList="changeModeList"
-               >
-     </component>
-     {{ selectedNames }}
+     <div class="header-wrap navbar navbar-default">
+        <div class="container main-header">
+           <div class="row">
+           <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <img class="navbar-brand" src="/src/assets/logo.svg" alt="Babynamer">
+          </div>
+
+          <app-header>
+            <img class="logo" src="/src/assets/logo.svg" alt="Babynamer">
+            <span class="beta-lable">&beta;eta</span>
+            <nav class="main-nav collapse navbar-collapse" id="bs-example-navbar-collapse-1" slot="main-nav">
+               <ul class="main-nav-list nav navbar-nav">
+                  <li class="main-nav-list__item"><button type="button" @click="setActive('appMainNames'); currentView = 'appMainNames'" :class="{ active : isMain }">Рабочий список</button></li>
+                  <li class="main-nav-list__item"><button type="button" @click="setActive('churchNames'); currentView = 'appMainNames'; churchNamesOptions = !churchNamesOptions" :class="{ active : isChurch }">Церковные имена</button></li>
+                  <li class="main-nav-list__item"><button type="button" @click="setActive('appFavorites'); currentView = 'appFavorites'; churchNamesOptions = false" :class="{ active : isFavorite }">Избранные имена</button><span class="favorite-counter"><i v-if="favoriteCounter == 0" class="fa fa-heart-o" aria-hidden="true"></i><i v-if="favoriteCounter > 0" class="fa fa-heart" aria-hidden="true"></i>{{ favoriteCounter }}</span></li>
+               </ul>
+            </nav>
+         </app-header>
+         </div>
+       </div>
+     </div>
+     <div class="option-wrap"   v-show="churchNamesOptions && currentView === 'appMainNames'">
+         <app-options :getChurchNames="getChurchNames"></app-options>
+     </div>
+     <div class="new-name-wrap" v-show="currentView !== 'appFavorites'">
+        <div class="container">
+           <app-new-name @addEvent="addName" :userData="userData"></app-new-name>
+       </div>
+     </div>
+     <div class="result-box-wrap">
+        <div class="container">
+              <component class="":is="currentView"
+                       :names="names"
+                       :favoriteListEmpty="favoriteListEmpty"
+                       :mainListEmpty="mainListEmpty"
+                       :clearFavorite="clearFavorite"
+                       :currentView="currentView"
+                       :removeFavorite="removeFavorite"
+                       :takeAction="takeAction"
+                       :selectedNames="selectedNames"
+                       @selected="pushSelectedNames($event)"
+                       @mode="changeModeName"
+                       :modeList="changeModeList"
+                       >
+             </component>
+        </div>
+     </div>
      <transition name="slide">
         <div class="error" v-show="emptyName">{{ errors[0].emptyName }}</div>
      </transition>
@@ -39,9 +65,10 @@
      <transition name="slide">
         <div class="error"  v-if="unacceptableSymbols">{{ errors[3].unacceptableSymbols }}</div>
      </transition>
-     <app-donate v-show="donateShow" class="donate"></app-donate>
+     <app-donate v-show="donateShow" :changeDonateShow="changeDonateShow" class="donate"><slot></slot></app-donate>
      <app-footer :changeDonateShow="changeDonateShow"
-               :changeCurrentView="changeCurrentView"></app-footer>
+                  :changeCurrentView="changeCurrentView"
+               ></app-footer>
   </div>
 </template>
 
@@ -78,8 +105,9 @@ export default {
             this.names.push( JSON.parse(localStorage.getItem(haveKeys[i])));
             this.favoriteCounter++
          }
-         this.keys = haveKeys;
+      this.keys = haveKeys;
       this.names.forEach(function(item, index){
+         item.selected = false;
          if(item.favorite === false){
             vm.mainListEmpty = false;
          } else if(item.favorite === true){
@@ -104,6 +132,9 @@ export default {
             firstname: '',
             patronym: ''
          },
+         isMain: true,
+         isChurch: false,
+         isFavorite: false,
          displayBlock: '',
          names: [],
          keys: [],
@@ -128,6 +159,17 @@ export default {
       }
    },
    methods: {
+      setActive: function(view) {
+         if (view == 'appMainNames') {
+            this.isFavorite = false;
+            this.isChurch = false;
+            this.isMain = true;
+         } else if(view == 'appFavorites'){
+            this.isFavorite = true;
+            this.isMain = false;
+            this.isChurch = false;
+         }
+      },
       showError(error) {
          var vm = this;
          switch (error) {
@@ -161,6 +203,7 @@ export default {
       },
       changeCurrentView() {
          this.currentView = 'appAbout';
+         this.isMain = false;
       },
       changeDonateShow() {
          this.donateShow = !this.donateShow
@@ -181,15 +224,20 @@ export default {
       },
       addName(fullname) {
          var vm = this;
-         var reg = /[#<>!№@:();"$&0-9]/g;
+         var reg = /[#<>!№@:;"$&0123456789]/ig;
          var item1 = fullname.firstname.match(reg)
          var item2 = fullname.lastname.match(reg)
          var item3 = fullname.patronym.match(reg)
-         if(item1 !== null){
+         console.log(item1)
+         console.log(item2)
+         console.log(item3)
+         if(item1 != null){
             return this.showError('unacceptableSymbols');
-         } else if (item2 !== null){
+         }
+         if(item2 != null){
             return this.showError('unacceptableSymbols');
-         } else if (item3 !== null) {
+         }
+         if(item3 != null){
             return this.showError('unacceptableSymbols');
          }
          var repeatInFavorite = this.names.some(function(item, index, arr) {
@@ -211,6 +259,7 @@ export default {
          var newName = {};
          newName.favorite = false;
          newName.mode = 0;
+         newName.selected = false;
          newName.lastname = fullname.lastname;
          newName.firstname = fullname.firstname;
          newName.patronym = fullname.patronym;
@@ -226,7 +275,6 @@ export default {
             case 4: newName.curMode = `${fullname.lastname} ${fullname.firstname}`;
          }
          this.names.push(newName);
-         console.log(this.names);
          this.mainListEmpty = false;
          this.currentView = 'appMainNames';
          this.userData.firstname = '';
@@ -268,6 +316,7 @@ export default {
             for (var i = 0; i < selectedNames.length; i++) {
                this.names.forEach(function(item, index, arr){
                   if(item.firstname === selectedNames[i]){
+                     item.selected = false;
                      item.favorite = true;
                      vm.favoriteCounter++;
                      vm.keys.push(item.firstname);
@@ -436,26 +485,145 @@ export default {
 </script>
 
 <style lang="scss">
-   #app {
-      padding: 20px;
-      font-family: Helvetica, Arial, sans-serif;
+   .logo {
+      width: 172px;
+      height: 48px;
+      @media (max-width: 767px) {
+         display: none;
+      }
    }
-   .header {
-      margin-bottom: 30px;
+   .header-wrap {
+      height: 65px;
+      background-color: #fff;
+      padding-top: 6px;
+      box-shadow: 0 2px 2px 0 rgba(34, 34, 34, 0.1);
+      .beta-lable {
+         color: #bfbfbf;
+         @media (max-width: 767px) {
+            display: none;
+         }
+         @media (max-width: 767px) {
+            display: none;
+         }
+         @media (max-width: 991px) {
+            display: none;
+         }
+      }
    }
    .main-nav {
+      padding-top: 13px;
       float: right;
+      .main-nav-list {
+         padding: 0;
+         margin: 0;
+         &__item {
+            display: inline-block;
+            list-style: none;
+            cursor: pointer;
+            i {
+               font-family: 'FontAwesome';
+               color: #D86979;
+            }
+            @media (max-width: 767px) {
+               display: block;
+               padding-bottom: 8px;
+            }
+            button {
+               background: none;
+               padding: 0;
+               border: 0;
+               margin-right: 20px;
+               font-size: 18px;
+               color: darken(#e6e6e6, 55%);
+               outline: none;
+               &:hover {
+                  color: #D86979;
+               }
+            }
+            .active {
+               color: #D86979;
+            }
+         }
+         @media (max-width: 767px) {
+            padding-top: 10px;
+            padding-bottom: 10px;
+         }
+      }
+      @media (max-width: 767px) {
+         width: 100%;
+         padding-left: 25px;
+      }
    }
-   .result-box {
-      padding: 10px;
+   .option-wrap {
+      padding: 20px;
+      background-color: #6D4657;
    }
-   .main-nav__list {
-      padding: 0;
-      margin: 0;
-      .main-nav__item {
-         display: inline-block;
-         list-style: none;
-         cursor: pointer;
+   .new-name-wrap {
+      background-color: #B3D5C4;
+      text-align: center;
+   }
+   .result-box-wrap {
+      background-color: #f2f1ee;
+      @media (max-width: 767px) {
+         padding: 0;
+      }
+   }
+   .list-box {
+      padding: 50px 60px;
+      @media (max-width: 991px) {
+         padding: 25px 25px;
+      }
+      @media (max-width: 767px) {
+         padding: 12px 5px;
+      }
+      .list {
+         padding: 0;
+         margin: 0;
+      }
+      background-color: #fff;
+      box-shadow: 4px 4px 0 0 #dedcd7;
+      &__item {
+      list-style: none;
+      color: #3e3e3e;
+      cursor: pointer;
+      font-size: 22px;
+      padding: 5px 20px;
+      &:hover {
+         color: darken(#D86979, 3%);
+      }
+      @media (max-width: 767px) {
+         font-size: 16px;
+      }
+      }
+   }
+
+   .control-btns {
+      text-align: center;
+      margin-bottom: 30px;
+      @media (max-width: 767px) {
+         margin-bottom: 40px;
+      }
+      button {
+         color: #816161;
+         text-align: center;
+         background: none;
+         border: 0;
+         padding: 0;
+         outline: 0;
+         margin: 0 10px;
+         font-size: 18px;
+         line-height: 20px;
+         border-bottom: 1px dashed darken(#e6e6e6, 20%);
+         @media (max-width: 767px) {
+            margin: 12px auto;
+            display: block;
+         }
+         &:hover {
+            border-bottom: none;
+         }
+      }
+      &__mode {
+         color: #7abbe0;
       }
    }
    .error {
@@ -463,24 +631,27 @@ export default {
       padding: 10px;
       background-color: #fcbfbf;
    }
-   .options-panel {
-      padding: 15px 0;
-      background-color: #a5dcde;
-      text-align: center;
-      margin-bottom: 30px;
-   }
    .empty-list {
+      font-size: 16px;
       text-align: center;
       padding: 20px 0;
+      color: #adadad;
+   }
+   .favorite-counter {
+      font-size: 16px;
+      color: #D86979;
+      i {
+         color: #D86979;
+         margin-right: 5px;
+      }
    }
 
+   // Animation classes
    .fade-enter {
       opacity: 0;
    }
    .fade-enter-active {
       transition: opacity .3s;
-   }
-   .fade-leave {
    }
    .fade-leave-active {
       transition: opacity .3s;
@@ -492,9 +663,6 @@ export default {
    .slide-enter-active {
       transition: opacity .3s;
       animation: slide-in .3s ease-out forwards;
-   }
-   .slide-leave {
-
    }
    .slide-leave-active {
       transition: opacity .3s;
@@ -516,5 +684,39 @@ export default {
       to {
          transform: translateY(-10px);
       }
+   }
+
+   // Bootstrap
+   .navbar-default, .navbar-collapse {
+      border: none;
+   }
+   .container.main-header {
+      @media (max-width: 767px) {
+         background-color: #fff;
+         box-shadow: 0 3px 5px 0 rgba(34, 34, 34, 0.2);
+      }
+   }
+   .navbar {
+      margin-bottom: 0;
+   }
+   .navbar-brand {
+      height: 50px;
+      padding: 0;
+      margin-left: 20px;
+      @media (min-width: 767px) {
+         display: none;
+      }
+   }
+   .navbar-header {
+      height: 60px;
+   }
+   .navbar-toggle {
+      margin-top: 10px;
+   }
+   .navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
+      background-color: #fff;
+   }
+   .navbar-default .navbar-toggle {
+      border: none;
    }
 </style>
