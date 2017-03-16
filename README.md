@@ -1,6 +1,6 @@
 # babynamer
 
-> A Vue.js project
+> The app for choosing a name for the child
 
 ## Build Setup
 
