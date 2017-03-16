@@ -27,15 +27,20 @@
          </div>
        </div>
      </div>
-     <div class="option-wrap"   v-show="churchNamesOptions && currentView === 'appMainNames'">
-         <app-options :getChurchNames="getChurchNames"></app-options>
-     </div>
+
+        <div class="option-wrap"   v-if="churchNamesOptions && currentView === 'appMainNames'">
+         <transition name="slide">
+           <app-options :getChurchNames="getChurchNames"></app-options>
+         </transition>
+       </div>
+
      <div class="new-name-wrap" v-show="currentView !== 'appFavorites'">
         <div class="container">
            <app-new-name @addEvent="addName" :userData="userData"></app-new-name>
        </div>
      </div>
      <div class="result-box-wrap">
+        <!-- {{ keys }} {{ selectedNames }} -->
         <div class="container">
               <component class="":is="currentView"
                        :names="names"
@@ -273,6 +278,8 @@ export default {
             case 3: newName.curMode = `${fullname.firstname} ${fullname.patronym} ${fullname.lastname}`;
             break;
             case 4: newName.curMode = `${fullname.lastname} ${fullname.firstname}`;
+            break;
+            case 5: newName.curMode = `${fullname.firstname} ${fullname.patronym}`;
          }
          this.names.push(newName);
          this.mainListEmpty = false;
@@ -415,13 +422,15 @@ export default {
             this.names.forEach(function(item){ item.mode = 4});
             break;
             case 4:
+            this.names.forEach(function(item){ item.mode = 5});
+            break;
+            case 5:
             this.names.forEach(function(item){ item.mode = 0});
             break;
 
          }
-         this.selectedNames = [];
          var vm = this;
-         vm.listMode === 4 ? vm.listMode = 0 : vm.listMode++;
+         vm.listMode === 5 ? vm.listMode = 0 : vm.listMode++;
          this.names.forEach(function(item, index, arr){
             switch (vm.listMode) {
                case 0: item.curMode = `${item.lastname} ${item.firstname} ${item.patronym}`; break;
@@ -429,6 +438,7 @@ export default {
                case 2: item.curMode = `${item.firstname} ${item.lastname}`; break;
                case 3: item.curMode = `${item.firstname} ${item.patronym} ${item.lastname}`; break;
                case 4: item.curMode = `${item.lastname} ${item.firstname}`; break;
+               case 5: item.curMode = `${item.firstname} ${item.patronym}`; break;
             }
          });
          console.log('Change mode list: ' + this.listMode)
@@ -556,10 +566,13 @@ export default {
    }
    .option-wrap {
       padding: 20px;
-      background-color: #6D4657;
+      background-color: #653b46;
    }
    .new-name-wrap {
-      background-color: #B3D5C4;
+      box-sizing: border-box;
+      background:url('/src/assets/bg.jpg');
+      background-position: center;
+      background-color: #d5c5ad;
       text-align: center;
    }
    .result-box-wrap {
@@ -571,7 +584,7 @@ export default {
    .list-box {
       padding: 50px 60px;
       @media (max-width: 991px) {
-         padding: 25px 25px;
+         padding: 25px 45px;
       }
       @media (max-width: 767px) {
          padding: 12px 5px;
@@ -583,17 +596,30 @@ export default {
       background-color: #fff;
       box-shadow: 4px 4px 0 0 #dedcd7;
       &__item {
-      list-style: none;
-      color: #3e3e3e;
-      cursor: pointer;
-      font-size: 22px;
-      padding: 5px 20px;
-      &:hover {
-         color: darken(#D86979, 3%);
-      }
-      @media (max-width: 767px) {
-         font-size: 16px;
-      }
+         list-style: none;
+         color: #3e3e3e;
+         cursor: pointer;
+         font-size: 22px;
+         padding: 5px 20px;
+         &:hover {
+            color: darken(#D86979, 3%);
+         }
+         @media (max-width: 767px) {
+            font-size: 16px;
+         }
+         &:before {
+            display: inline-block;
+            content: "\f044";
+            margin-left: -24px;
+            margin-bottom: 2px;
+            vertical-align: middle;
+            color: #dbdbdb;
+            font-family: 'FontAwesome';
+            font-size: 18px;
+         }
+         &:focus:before {
+            color: darken(#D86979, 3%);
+         }
       }
    }
 
@@ -671,7 +697,7 @@ export default {
    }
    @keyframes slide-in {
       from {
-         transform: translateY(-10px);
+         transform: translateY(40px);
       }
       to {
          transform: translateY(0);

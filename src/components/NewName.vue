@@ -33,7 +33,7 @@ export default {
 
 <style lang="scss">
    .main-form {
-      padding: 50px;
+      padding: 100px 50px 50px 50px;
       margin-bottom: 10px;
       &__item {
          font-size: 18px;
@@ -58,6 +58,10 @@ export default {
       @media (max-width: 767px) {
          padding: 13px 8px;
       }
+      @media (max-width: 991px) {
+         padding: 60px 45px;
+         margin: 0;
+      }
    }
    .submit-btn {
       border: 0;
@@ -65,11 +69,11 @@ export default {
       padding: 15px 50px;
       font-size: 18px;
       color: #fff;
-      background-color: #D86979;
+      background-color: darken(#D86979, 5%);
       transition: all .2s;
       outline: none;
       &:hover {
-         background-color: darken(#D86979, 5%);
+         background-color: darken(#D86979, 8%);
       }
       @media (max-width: 767px) {
          display: none;

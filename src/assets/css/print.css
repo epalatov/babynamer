@@ -1,8 +1,8 @@
-.list-box__item {
-   font-size: 37px;
+li.list-box__item {
+   font-size: 27px;
 }
 
-
+li.list-box__item:before,
 .header-wrap,
 .option-wrap,
 .new-name-wrap,

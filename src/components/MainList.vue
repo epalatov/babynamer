@@ -17,7 +17,7 @@
                                        :class="{selectedName : name.selected}"
                                        >
                                        {{ customFilter(name.curMode) }}
-                                       <span class="change-mode-btn" @click="mode(name)"></span>
+                                       <!-- <span class="change-mode-btn" @click="mode(name)"></span> -->
                </li>
             <!-- </transition-group> -->
          </ul>
@@ -79,18 +79,8 @@ export default {
 </script>
 
 <style lang="scss">
-   .selectedName {
-      color: #D86979;
-   }
    .selectedName:before {
-      display: inline-block;
-      content: "\f044";
-      margin-left: -24px;
-      margin-bottom: 2px;
-      vertical-align: middle;
       color: #D86979;
-      font-family: 'FontAwesome';
-      font-size: 18px;
    }
    .result {
       padding: 40px 24px 40px 24px;
