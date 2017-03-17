@@ -35,6 +35,13 @@ export default {
    .main-form {
       padding: 100px 50px 50px 50px;
       margin-bottom: 10px;
+      @media (max-width: 991px) {
+         padding: 60px 45px;
+         margin: 0;
+      }
+      @media (max-width: 767px) {
+         padding: 13px 0;
+      }
       &__item {
          font-size: 18px;
          color: #505050;
@@ -49,20 +56,16 @@ export default {
          }
          @media (max-width: 767px) {
             width: 100%;
-            margin: 10px 0;
          }
       }
       &__submit-wrap {
          padding-top: 30px;
-      }
-      @media (max-width: 767px) {
-         padding: 13px 8px;
-      }
-      @media (max-width: 991px) {
-         padding: 60px 45px;
-         margin: 0;
+         @media (max-width: 767px) {
+            padding: 0;
+         }
       }
    }
+
    .submit-btn {
       border: 0;
       border-radius: 3px;

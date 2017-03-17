@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-     <div class="header-wrap navbar navbar-default">
-        <div class="container main-header">
-           <div class="row">
+     <nav class="header-wrap navbar navbar-default navbar-fixed-top">
+        <div class="container main-header navbar-fixed-top">
+
            <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
               <span class="sr-only">Toggle navigation</span>
@@ -16,21 +16,30 @@
           <app-header>
             <img class="logo" src="/src/assets/logo.svg" alt="Babynamer">
             <span class="beta-lable">&beta;eta</span>
-            <nav class="main-nav collapse navbar-collapse" id="bs-example-navbar-collapse-1" slot="main-nav">
+
+            <div class="main-nav collapse navbar-collapse" id="bs-example-navbar-collapse-1" slot="main-nav">
                <ul class="main-nav-list nav navbar-nav">
-                  <li class="main-nav-list__item"><button type="button" @click="setActive('appMainNames'); currentView = 'appMainNames'" :class="{ active : isMain }">Рабочий список</button></li>
-                  <li class="main-nav-list__item"><button type="button" @click="setActive('churchNames'); currentView = 'appMainNames'; churchNamesOptions = !churchNamesOptions" :class="{ active : isChurch }">Церковные имена</button></li>
-                  <li class="main-nav-list__item"><button type="button" @click="setActive('appFavorites'); currentView = 'appFavorites'; churchNamesOptions = false" :class="{ active : isFavorite }">Избранные имена</button><span class="favorite-counter"><i v-if="favoriteCounter == 0" class="fa fa-heart-o" aria-hidden="true"></i><i v-if="favoriteCounter > 0" class="fa fa-heart" aria-hidden="true"></i>{{ favoriteCounter }}</span></li>
+                  <li class="main-nav-list__item" data-toggle="collapse" data-target=".collapse.in">
+                     <button type="button" @click="setActive('appMainNames'); currentView = 'appMainNames'" :class="{ active : isMain }">Рабочий список</button>
+                  </li>
+                  <li class="main-nav-list__item" data-toggle="collapse" data-target=".collapse.in">
+                     <button type="button" @click="setActive('churchNames'); currentView = 'appMainNames'; churchNamesOptions = !churchNamesOptions" :class="{ active : isChurch }"><a href="#">Церковные имена</a></button>
+                  </li>
+                  <li class="main-nav-list__item" data-toggle="collapse" data-target=".collapse.in">
+                     <button type="button" @click="setActive('appFavorites'); currentView = 'appFavorites'; churchNamesOptions = false" :class="{ active : isFavorite }">Избранные имена</button>
+                     <span class="favorite-counter"><i v-if="favoriteCounter == 0" class="fa fa-heart-o" aria-hidden="true"></i><i v-if="favoriteCounter > 0" class="fa fa-heart" aria-hidden="true"></i>{{ favoriteCounter }}</span>
+                  </li>
                </ul>
-            </nav>
+            </div>
+
          </app-header>
-         </div>
+
        </div>
-     </div>
+    </nav>
 
         <div class="option-wrap"   v-if="churchNamesOptions && currentView === 'appMainNames'">
          <transition name="slide">
-           <app-options :getChurchNames="getChurchNames"></app-options>
+           <app-options :getChurchNames="getChurchNames" :closeOptions="closeOptions"></app-options>
          </transition>
        </div>
 
@@ -164,6 +173,9 @@ export default {
       }
    },
    methods: {
+      closeOptions() {
+         this.churchNamesOptions = false;
+      },
       setActive: function(view) {
          if (view == 'appMainNames') {
             this.isFavorite = false;
@@ -226,6 +238,7 @@ export default {
             this.userData.firstname = resultQuery[i].name;
             this.addName(this.userData);
          }
+         this.churchNamesOptions = false;
       },
       addName(fullname) {
          var vm = this;
@@ -495,6 +508,12 @@ export default {
 </script>
 
 <style lang="scss">
+   body {
+      margin-top: 65px;
+      @media (max-width: 767px) {
+         margin-top: 0;
+      }
+   }
    .logo {
       width: 172px;
       height: 48px;
@@ -507,6 +526,10 @@ export default {
       background-color: #fff;
       padding-top: 6px;
       box-shadow: 0 2px 2px 0 rgba(34, 34, 34, 0.1);
+      @media (max-width: 767px) {
+         height: 60px;
+         position: relative;
+      }
       .beta-lable {
          color: #bfbfbf;
          @media (max-width: 767px) {
@@ -521,8 +544,9 @@ export default {
       }
    }
    .main-nav {
-      padding-top: 13px;
+      padding-top: 18px;
       float: right;
+      z-index: 9999;
       .main-nav-list {
          padding: 0;
          margin: 0;
@@ -536,7 +560,7 @@ export default {
             }
             @media (max-width: 767px) {
                display: block;
-               padding-bottom: 8px;
+               padding-bottom: 10px;
             }
             button {
                background: none;
@@ -546,6 +570,10 @@ export default {
                font-size: 18px;
                color: darken(#e6e6e6, 55%);
                outline: none;
+               & a {
+                  color: darken(#e6e6e6, 55%);
+                  text-decoration: none;
+               }
                &:hover {
                   color: #D86979;
                }
@@ -556,17 +584,24 @@ export default {
          }
          @media (max-width: 767px) {
             padding-top: 10px;
-            padding-bottom: 10px;
+            padding-bottom: 25px;
          }
       }
       @media (max-width: 767px) {
+         padding-top: 0;
          width: 100%;
          padding-left: 25px;
       }
    }
    .option-wrap {
       padding: 20px;
-      background-color: #653b46;
+      background-color: #6b3e49;
+      position: fixed;
+      z-index: 99999;
+      width: 100%;
+      @media (max-width: 767px) {
+         padding-bottom: 22px;
+      }
    }
    .new-name-wrap {
       box-sizing: border-box;
@@ -587,7 +622,11 @@ export default {
          padding: 25px 45px;
       }
       @media (max-width: 767px) {
-         padding: 12px 5px;
+         padding: 12px 16px;
+         margin: 0;
+      }
+      &>p {
+         margin: 0
       }
       .list {
          padding: 0;
@@ -603,9 +642,16 @@ export default {
          padding: 5px 20px;
          &:hover {
             color: darken(#D86979, 3%);
+            @media (max-width: 767px) {
+               color: #3e3e3e;
+            }
          }
          @media (max-width: 767px) {
-            font-size: 16px;
+            font-size: 14px;
+            padding: 2px 20px;
+         }
+         &>a {
+            color:#3e3e3e;
          }
          &:before {
             display: inline-block;
@@ -616,6 +662,9 @@ export default {
             color: #dbdbdb;
             font-family: 'FontAwesome';
             font-size: 18px;
+            @media (max-width: 767px) {
+               font-size: 14px;
+            }
          }
          &:focus:before {
             color: darken(#D86979, 3%);

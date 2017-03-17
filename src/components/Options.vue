@@ -12,7 +12,8 @@
                      :format="format"
                      >
          </datepicker>
-         <button class="show-chnames" type="button" @click="getChurchNames(gender, churchDate)">Показать</button>
+         <button class="show-chnames" type="button" @click="getChurchNames(gender, churchDate)"><a href="#list-box">Показать</a></button>
+         <button class="close-options" type="button" @click="closeOptions()">Закрыть</button>
       </div>
   </div>
 </template>
@@ -23,7 +24,8 @@ export default {
       datepicker: Datepicker
    },
    props: {
-      getChurchNames: Function
+      getChurchNames: Function,
+      closeOptions: Function
    },
    data() {
       return {
@@ -79,6 +81,7 @@ export default {
          border: none;
          @media (max-width: 767px) {
             margin-top: 17px;
+            margin-left: 0;
          }
       }
    }
@@ -95,8 +98,24 @@ export default {
       &:hover {
          background-color: darken(#D86979, 5%);
       }
+      &>a {
+         color: #fff;
+         text-decoration: none;
+      }
       @media (max-width: 767px) {
          margin-top: 10px;
+         margin-left: 0;
+      }
+   }
+   .close-options {
+      display: block;
+      margin: 10px auto 0 auto;
+      background: none;
+      border: none;
+      color: #e67c8b;
+      display: none;
+      @media(max-width: 767px){
+         display: block;
       }
    }
 </style>

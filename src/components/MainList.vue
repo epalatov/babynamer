@@ -7,7 +7,7 @@
          <button type="button" name="changeMode" @click="modeList()">Режим списка</button>
       </div>
 
-      <div class="list-box col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
+      <div id="list-box" class="list-box col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
          <div class="empty-list" v-show="mainListEmpty">Список пуст</div>
          <ul class="list">
             <!-- <transition-group name="slide-fade"> -->
@@ -85,7 +85,7 @@ export default {
    .result {
       padding: 40px 24px 40px 24px;
       @media(max-width: 767px){
-         padding: 20px 24px 30px 24px;
+         padding-top: 15px;
       }
    }
    .change-mode-btn:before {

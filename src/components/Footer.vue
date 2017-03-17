@@ -10,8 +10,8 @@
          <button class="footer-menu__item" type="button" @click="changeCurrentView()">О проекте</button>
          <i class="fa fa-circle" aria-hidden="true"></i>
          <a href="http://babynamer.reformal.ru" title="Отзывы и пожелания" target="_blank" class="footer-menu__item">Отзывы и пожелания</a>
-         <i class="fa fa-circle" aria-hidden="true"></i>
-         <button class="footer-menu__item" type="button" @click="changeDonateShow()">Donate</button>
+         <i class="fa fa-circle donate" aria-hidden="true"></i>
+         <button class="footer-menu__item donate" type="button" @click="changeDonateShow()">Donate</button>
       </div>
       <p class="copy">Ⓒ Babynamer, {{ year }}</p>
    </div>
@@ -52,6 +52,7 @@ export default {
    }
    .footer-menu {
       i {
+         display: inline;
          font-size: 3px;
          margin-left: 5px;
          vertical-align: middle;
@@ -81,6 +82,11 @@ export default {
       &:hover {
          color: #D86979;
       }
+      &.donate {
+         @media(max-width:767px){
+            display: none;
+         }
+      }
    }
    .print {
       &__button {
@@ -105,6 +111,10 @@ export default {
          margin-right: 20px;
          font-size: 20px;
       }
-
+   }
+   .fa-circle.donate {
+      @media (max-width: 767px) and (max-width: 991px)  {
+         display: none;
+      }
    }
 </style>
