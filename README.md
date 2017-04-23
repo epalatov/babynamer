@@ -1,4 +1,4 @@
-## Babynamer
+## Babynamer — Cписок имен для ребенка
 
 <strong>Год:</strong> 2017<br>
 <strong>Категория:</strong> Дизайн, вёрстка, программирование<br>
@@ -13,6 +13,8 @@
 — Выбор имени по церковному календарю<br>
 
 <strong>Дополнительные материалы:</strong> <a href="https://www.dropbox.com/s/q8wu8jvprmy70jd/baby-name-generator.psd?dl=0" target="_blank" rel="noopener noreferrer">Макет</a><br><br>
+<div><strong>Ссылка:</strong> <a href="http://babynamer.ru/" target="_blank" rel="noopener noreferrer">cookybook.ru
+</a></div><br>
 
 <img src="http://ifrontender.ru/wp-content/uploads/2017/04/babynamer.jpg" alt="Babynamer" />
 
